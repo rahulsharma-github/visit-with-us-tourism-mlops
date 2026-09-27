@@ -28,11 +28,11 @@ env:
 
 jobs:
   register-dataset:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
           cache: pip
@@ -40,7 +40,7 @@ jobs:
       - run: python -m pip install -r tourism_project/requirements.txt
       - name: Validate and register repository CSV
         run: python -m tourism_project.model_building.data_register
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: registered-data
           path: |
@@ -50,23 +50,23 @@ jobs:
 
   data-prep:
     needs: register-dataset
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: tourism_project/requirements.txt
       - run: python -m pip install -r tourism_project/requirements.txt
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8.0.1
         with:
           name: registered-data
           path: tourism_project
       - name: Produce group-disjoint train and test artifacts
         run: python -m tourism_project.model_building.prep
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: data-splits
           path: tourism_project/data/splits/
@@ -74,17 +74,17 @@ jobs:
 
   model-training:
     needs: data-prep
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: tourism_project/requirements.txt
       - run: python -m pip install -r tourism_project/requirements.txt
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8.0.1
         with:
           name: data-splits
           path: tourism_project/data/splits
@@ -94,13 +94,13 @@ jobs:
         run: python -m pytest tests -q --junitxml=tourism_project/reports/tests.xml
       - name: Retain MLflow experiment evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: experiment-tracking
           path: tourism_project/mlruns/
           retention-days: 30
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: trained-model
           path: |
@@ -112,14 +112,14 @@ jobs:
   promote-model:
     needs: model-training
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.sha }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8.0.1
         with:
           name: trained-model
           path: tourism_project

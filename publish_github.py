@@ -11,7 +11,7 @@ import requests
 ROOT = Path(__file__).resolve().parent
 
 
-def publish(repository_name="visit-with-us-tourism-mlops", expected_owner="rahulsharma-github"):
+def publish(repository_name="visit-with-us-tourism-mlops", expected_owner="rahulsharma-github", include_paths=None):
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
         # Retrieve an already-authorized CLI credential without printing or persisting it.
@@ -64,6 +64,13 @@ def publish(repository_name="visit-with-us-tourism-mlops", expected_owner="rahul
     for name in ["README.md", "RUN_AND_SUBMIT.md", ".gitignore", "publish_github.py", "collect_evidence.py"]:
         if (ROOT / name).exists():
             files.append(ROOT / name)
+    if include_paths is not None:
+        # Scoped updates preserve models and reports already promoted by the hosted workflow.
+        requested = {str(Path(name)) for name in include_paths}
+        allowed = {str(path.relative_to(ROOT)) for path in files}
+        if not requested or not requested <= allowed:
+            raise ValueError("Every scoped update must name an allowed project file.")
+        files = [path for path in files if str(path.relative_to(ROOT)) in requested]
     entries = []
     for path in sorted(set(files)):
         blob = api("POST", f"/repos/{repo}/git/blobs", json={"content": base64.b64encode(path.read_bytes()).decode(), "encoding": "base64"})
@@ -81,6 +88,11 @@ if __name__ == "__main__":
     import json
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", default="visit-with-us-tourism-mlops")
-    result = publish(parser.parse_args().repo)
+    parser.add_argument("--only", nargs="+")
+    args = parser.parse_args()
+    result = publish(args.repo, include_paths=args.only)
     (ROOT / "evidence").mkdir(exist_ok=True)
-    (ROOT / "evidence/deployment.json").write_text(json.dumps(result, indent=2))
+    evidence = ROOT / "evidence/deployment.json"
+    previous = json.loads(evidence.read_text()) if evidence.exists() else {}
+    result["streamlit_url"] = previous.get("streamlit_url", "")
+    evidence.write_text(json.dumps(result, indent=2))

@@ -1,7 +1,11 @@
 '''Retrieve real public deployment evidence; never synthesize workflow success.'''
 
 import argparse
+import base64
 import json
+import os
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -16,6 +20,16 @@ def collect(repo, streamlit_url=""):
         raise ValueError("Repository must be owner/name.")
     api = "https://api.github.com"
     session = requests.Session()
+    # Optional authentication avoids shared public API rate limits; credentials never leave GitHub.
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if not token:
+        try:
+            token = subprocess.run(["gh", "auth", "token", "--hostname", "github.com"],
+                                   capture_output=True, text=True, check=True).stdout.strip()
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            token = None
+    if token:
+        session.headers["Authorization"] = f"Bearer {token}"
 
     def get(path):
         response = session.get(api + path, timeout=30)
@@ -27,19 +41,36 @@ def collect(repo, streamlit_url=""):
     main_runs = [r for r in runs if r["head_branch"] == "main" and r["event"] in {"push", "workflow_dispatch"}]
     run = main_runs[0] if main_runs else None
     jobs = get(f"/repos/{repo}/actions/runs/{run['id']}/jobs")["jobs"] if run else []
+    # Inspect the last model-metadata commit, not a later documentation-only commit.
+    model_commits = get(f"/repos/{repo}/commits?path=tourism_project/deployment/model_metadata.json&per_page=1")
+    model_commit = model_commits[0] if model_commits else {}
+    model_metadata = {}
+    if model_commit:
+        content = get(f"/repos/{repo}/contents/tourism_project/deployment/model_metadata.json?ref={model_commit['sha']}")
+        model_metadata = json.loads(base64.b64decode(content["content"]))
+    promotion_verified = bool(
+        run and (model_commit.get("author") or {}).get("login") == "github-actions[bot]"
+        and model_metadata.get("source_commit") == run["head_sha"]
+        and model_metadata.get("quality_gate_passed")
+    )
     result = {
+        "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "github_repo": repo, "repository_url": repository["html_url"], "repository_public": not repository["private"],
         "workflow_url": run["html_url"] if run else "", "workflow_conclusion": run["conclusion"] if run else "not_run",
         "workflow_source_commit": run["head_sha"] if run else "",
         "jobs": [{"name": job["name"], "conclusion": job["conclusion"]} for job in jobs],
         "all_required_jobs_passed": REQUIRED_JOBS <= {j["name"] for j in jobs if j["conclusion"] == "success"},
+        "automatic_model_commit_verified": promotion_verified,
+        "model_commit_url": model_commit.get("html_url", ""),
+        "hosted_model_source_commit": model_metadata.get("source_commit", ""),
+        "hosted_test_metrics": model_metadata.get("test_metrics", {}),
         "streamlit_url": streamlit_url, "streamlit_health_ok": False,
     }
     if streamlit_url:
         parsed = urlparse(streamlit_url)
         if parsed.scheme != "https" or not (parsed.hostname or "").endswith(".streamlit.app"):
             raise ValueError("Expected the public HTTPS Streamlit Community Cloud app URL.")
-        response = session.get(streamlit_url.rstrip("/") + "/_stcore/health", timeout=60)
+        response = requests.get(streamlit_url.rstrip("/") + "/_stcore/health", timeout=60)
         result["streamlit_health_ok"] = response.status_code == 200 and response.text.strip().lower() == "ok"
     evidence = ROOT / "evidence"
     evidence.mkdir(exist_ok=True)

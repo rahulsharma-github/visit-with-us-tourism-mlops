@@ -80,6 +80,8 @@ def test_workflow_artifact_contract_and_promotion_guard():
     assert config["jobs"]["data-prep"]["needs"] == "register-dataset"
     assert config["jobs"]["model-training"]["needs"] == "data-prep"
     source = (ROOT / ".github/workflows/pipeline.yml").read_text()
-    assert "actions/download-artifact@v4" in source and "actions/upload-artifact@v4" in source
+    actions = [step.get("uses", "") for job in config["jobs"].values() for step in job["steps"]]
+    assert any(action.startswith("actions/download-artifact@") for action in actions)
+    assert any(action.startswith("actions/upload-artifact@") for action in actions)
     assert "contents: write" in source and "[skip ci]" in source
     assert "git push origin HEAD:main" in source

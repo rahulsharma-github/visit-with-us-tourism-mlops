@@ -77,9 +77,15 @@ The CSV trial ledger is also committed in reports for convenient inspection.
 
 ## Public deployment status
 
-Local execution is evidence of local functionality. It is not proof of a hosted
-Actions run or a public Streamlit deployment. Public links and real screenshots
-are recorded in `evidence/deployment.json` after deployment. See `RUN_AND_SUBMIT.md`.
+- [Public project repository](https://github.com/rahulsharma-github/visit-with-us-tourism-mlops)
+- [Hosted workflow runs](https://github.com/rahulsharma-github/visit-with-us-tourism-mlops/actions/workflows/pipeline.yml)
+
+The initial four-job hosted workflow passed, including automatic model promotion
+to `main`. Use the workflow link to inspect the latest execution and its artifacts.
+This does not itself establish public Streamlit deployment. The notebook records
+live run status, the model's source commit, the actual app URL and genuine service
+screenshots in its Output Evaluation section. Missing app evidence remains pending.
+See `RUN_AND_SUBMIT.md` for the deployment and evidence requirements.
 
 ## References
 
