@@ -94,10 +94,10 @@
   "sklearn": "1.6.1",
   "pandas": "2.2.3",
   "numpy": "2.1.3",
-  "mlflow_parent_run_id": "ff9e1f88457b4d21894bdd79dd49d091",
+  "mlflow_parent_run_id": "bffb6196e49d4aaeb7cb06516b6346f6",
   "tuned_combinations": 16,
   "quality_gate_passed": true,
   "serialization_max_probability_difference": 0.0,
-  "source_commit": "a3121437b6441b2240855cfa3438cc43032391d2",
-  "duration_seconds": 49.9
+  "source_commit": "bea4acc3dca440245b85e8582963225b0ffe8be4",
+  "duration_seconds": 50.63
 }
