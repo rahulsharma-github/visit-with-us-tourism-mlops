@@ -79,10 +79,15 @@ The CSV trial ledger is also committed in reports for convenient inspection.
 
 - [Public project repository](https://github.com/rahulsharma-github/visit-with-us-tourism-mlops)
 - [Hosted workflow runs](https://github.com/rahulsharma-github/visit-with-us-tourism-mlops/actions/workflows/pipeline.yml)
+- [Streamlit application URL supplied by the project owner](https://visit-with-us-tourism-mlops.streamlit.app/)
 
 The initial four-job hosted workflow passed, including automatic model promotion
 to `main`. Use the workflow link to inspect the latest execution and its artifacts.
-This does not itself establish public Streamlit deployment. The notebook records
+On 2026-09-27, the project owner confirmed that the Streamlit app produces a
+prediction in an incognito/private browser without login. This owner-reported
+check is recorded separately from the automated HTTP health probe. An HTML
+response from the health URL is not treated as proof of success or failure.
+Genuine deployment screenshots are still required for submission. The notebook records
 live run status, the model's source commit, the actual app URL and genuine service
 screenshots in its Output Evaluation section. Missing app evidence remains pending.
 See `RUN_AND_SUBMIT.md` for the deployment and evidence requirements.

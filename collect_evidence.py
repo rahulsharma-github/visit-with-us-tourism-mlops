@@ -73,15 +73,33 @@ def collect(repo, streamlit_url=""):
         "hosted_split_hashes": hosted_preparation.get("file_hashes", {}),
         "hosted_model_sha256": model_metadata.get("model_sha256", ""),
         "streamlit_url": streamlit_url, "streamlit_health_ok": False,
+        "streamlit_health_check": {},
     }
     if streamlit_url:
         parsed = urlparse(streamlit_url)
         if parsed.scheme != "https" or not (parsed.hostname or "").endswith(".streamlit.app"):
             raise ValueError("Expected the public HTTPS Streamlit Community Cloud app URL.")
-        response = requests.get(streamlit_url.rstrip("/") + "/_stcore/health", timeout=60)
-        result["streamlit_health_ok"] = response.status_code == 200 and response.text.strip().lower() == "ok"
+        # A cloud HTML shell is not a successful health response or a verified prediction.
+        try:
+            response = requests.get(streamlit_url.rstrip("/") + "/_stcore/health", timeout=60)
+            result["streamlit_health_ok"] = response.status_code == 200 and response.text.strip().lower() == "ok"
+            result["streamlit_health_check"] = {
+                "http_status": response.status_code,
+                "content_type": response.headers.get("Content-Type", ""),
+                "redirect_count": len(response.history),
+                "result": "verified" if result["streamlit_health_ok"] else "unverified_response",
+            }
+        except requests.RequestException as exc:
+            result["streamlit_health_check"] = {"result": "request_failed", "error_type": type(exc).__name__}
     evidence = ROOT / "evidence"
     evidence.mkdir(exist_ok=True)
+    confirmation_path = evidence / "browser_confirmation.json"
+    confirmation = json.loads(confirmation_path.read_text()) if confirmation_path.exists() else {}
+    # Retain provenance: an owner's dated browser report is not an automated interaction test.
+    result["owner_browser_confirmation"] = confirmation if (
+        confirmation.get("streamlit_url", "").rstrip("/") == streamlit_url.rstrip("/")
+        and confirmation.get("public_prediction_confirmed") is True
+    ) else {}
     result["screenshots_present"] = {name: (evidence / name).is_file() for name in
                                      ["github_repository.png", "github_workflow.png", "streamlit_app.png"]}
     (evidence / "deployment.json").write_text(json.dumps(result, indent=2))
