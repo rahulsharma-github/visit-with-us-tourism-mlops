@@ -1,0 +1,40 @@
+{
+  "source_sha256": "3f891d5fbaa3a38a4e74d4cc08be7ce6261f9c193c71535508deec9617dca4da",
+  "seed": 42,
+  "split_method": "first fold of StratifiedGroupKFold(n_splits=5)",
+  "model_input_count": 13,
+  "excluded_post_contact": [
+    "TypeofContact",
+    "DurationOfPitch",
+    "NumberOfFollowups",
+    "ProductPitched",
+    "PitchSatisfactionScore"
+  ],
+  "excluded_identifiers": [
+    "Unnamed: 0",
+    "CustomerID"
+  ],
+  "profile_overlap": 0,
+  "splits": {
+    "train": {
+      "rows": 3293,
+      "positive_count": 634,
+      "positive_rate": 0.19252960825994533
+    },
+    "test": {
+      "rows": 835,
+      "positive_count": 163,
+      "positive_rate": 0.19520958083832335
+    }
+  },
+  "file_hashes": {
+    "X_test.csv": "e383425b917d56087b02a444e78fac13728d6c0ab8d62cd856b992896b47f98a",
+    "X_train.csv": "1a4e05b61254ea5d3dd2dacaea888200b5bddf0ce6ea228624a37fc7293705ad",
+    "groups_test.csv": "b68ed6654a66a5641b1581bcc6a226bbf6aed5fa3b1c43187755c406ca377a64",
+    "groups_train.csv": "121fc301d581fd533a1518958706030eb9a393357a801f676205c95f5b3a9d67",
+    "ids_test.csv": "1819a6a777a223358e1f476462710dd2ce52334096213a0bfc10fa2afe156936",
+    "ids_train.csv": "14bb832387c0adfffe1e2f1d736ac21111bff8a9f08cee7b9614be43e077e223",
+    "y_test.csv": "ad1093220cdb6e26ca5863c22231633f84d073debdffd448f29c5c6aea6be94e",
+    "y_train.csv": "06a7d46388cd19256f0a710cdd552278a1bfd1820fd8f592f3c05b326faf0197"
+  }
+}

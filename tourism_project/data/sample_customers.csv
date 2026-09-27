@@ -1,0 +1,4 @@
+Age,NumberOfPersonVisiting,NumberOfTrips,NumberOfChildrenVisiting,MonthlyIncome,CityTier,Occupation,Gender,PreferredPropertyStar,MaritalStatus,Passport,OwnCar,Designation
+49.0,3,2.0,2.0,20130.0,1,Salaried,Male,4,Divorced,0,1,Manager
+37.0,3,7.0,0.0,17090.0,1,Free Lancer,Male,3,Single,1,0,Executive
+33.0,2,2.0,1.0,17909.0,1,Salaried,Female,3,Divorced,1,1,Executive

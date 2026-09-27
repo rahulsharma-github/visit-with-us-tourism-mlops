@@ -1,0 +1,103 @@
+{
+  "model": "Random Forest",
+  "threshold": 0.19,
+  "features": [
+    "Age",
+    "NumberOfPersonVisiting",
+    "NumberOfTrips",
+    "NumberOfChildrenVisiting",
+    "MonthlyIncome",
+    "CityTier",
+    "Occupation",
+    "Gender",
+    "PreferredPropertyStar",
+    "MaritalStatus",
+    "Passport",
+    "OwnCar",
+    "Designation"
+  ],
+  "derived_features": [
+    "AdultsVisiting",
+    "IncomePerTraveller"
+  ],
+  "best_parameters": {
+    "model__class_weight": "balanced",
+    "model__max_depth": null,
+    "model__min_samples_leaf": 1,
+    "model__n_estimators": 280
+  },
+  "cv_average_precision": 0.6825555070593537,
+  "oof_metrics": {
+    "average_precision": 0.6801999872533558,
+    "roc_auc": 0.8836369665311429,
+    "accuracy": 0.7953234133009414,
+    "balanced_accuracy": 0.8113985239108177,
+    "precision": 0.48185117967332125,
+    "recall": 0.8375394321766562,
+    "f1": 0.6117511520737328,
+    "f2": 0.7297965915338098,
+    "brier_score": 0.09972200229924949
+  },
+  "test_metrics": {
+    "average_precision": 0.7703673092551879,
+    "roc_auc": 0.9190174919661117,
+    "accuracy": 0.8502994011976048,
+    "balanced_accuracy": 0.8721424919661116,
+    "precision": 0.5736434108527132,
+    "recall": 0.9079754601226994,
+    "f1": 0.7030878859857482,
+    "f2": 0.8131868131868132,
+    "brier_score": 0.08803178846388857
+  },
+  "test_at_default_threshold": {
+    "average_precision": 0.7703673092551879,
+    "roc_auc": 0.9190174919661117,
+    "accuracy": 0.8802395209580839,
+    "balanced_accuracy": 0.7141624671340929,
+    "precision": 0.8888888888888888,
+    "recall": 0.44171779141104295,
+    "f1": 0.5901639344262295,
+    "f2": 0.49113233287858116,
+    "brier_score": 0.08803178846388857
+  },
+  "dummy_test_metrics": {
+    "average_precision": 0.19520958083832335,
+    "roc_auc": 0.5,
+    "accuracy": 0.8047904191616766,
+    "balanced_accuracy": 0.5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "f2": 0.0,
+    "brier_score": 0.15710998264027032
+  },
+  "all_contact_baseline_f2": 0.5480833893745797,
+  "cluster_bootstrap_95pct": {
+    "average_precision": [
+      0.7001996747036225,
+      0.8374263147512818
+    ],
+    "recall": [
+      0.8612588717348357,
+      0.9520838340142594
+    ]
+  },
+  "top_20pct_precision": 0.6826347305389222,
+  "top_20pct_lift": 3.4969325153374236,
+  "top_20pct_count": 167,
+  "source_sha256": "3f891d5fbaa3a38a4e74d4cc08be7ce6261f9c193c71535508deec9617dca4da",
+  "model_sha256": "8bc2e07d614b18e34b1104897846cc2be783e63c1e942e7ab8f27b1d265e1b35",
+  "test_prevalence": 0.19520958083832335,
+  "train_rows": 3293,
+  "test_rows": 835,
+  "python": "3.12.14",
+  "sklearn": "1.6.1",
+  "pandas": "2.2.3",
+  "numpy": "2.1.3",
+  "mlflow_parent_run_id": "128cefd8e031466882f484c2b4e5fc90",
+  "tuned_combinations": 16,
+  "quality_gate_passed": true,
+  "serialization_max_probability_difference": 0.0,
+  "source_commit": "local-execution",
+  "duration_seconds": 22.19
+}

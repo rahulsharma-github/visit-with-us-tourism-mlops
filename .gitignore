@@ -1,0 +1,15 @@
+.venv/
+.jupyter/
+.ipython/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.streamlit/secrets.toml
+tourism_project/data/splits/
+tourism_project/mlruns/
+*.ipynb
+*.html
+*.zip
+evidence/local_*.png
+evidence/screenshot*.png
