@@ -45,9 +45,12 @@ def collect(repo, streamlit_url=""):
     model_commits = get(f"/repos/{repo}/commits?path=tourism_project/deployment/model_metadata.json&per_page=1")
     model_commit = model_commits[0] if model_commits else {}
     model_metadata = {}
+    hosted_preparation = {}
     if model_commit:
         content = get(f"/repos/{repo}/contents/tourism_project/deployment/model_metadata.json?ref={model_commit['sha']}")
         model_metadata = json.loads(base64.b64decode(content["content"]))
+        preparation = get(f"/repos/{repo}/contents/tourism_project/reports/preparation.json?ref={model_commit['sha']}")
+        hosted_preparation = json.loads(base64.b64decode(preparation["content"]))
     promotion_verified = bool(
         run and (model_commit.get("author") or {}).get("login") == "github-actions[bot]"
         and model_metadata.get("source_commit") == run["head_sha"]
@@ -64,6 +67,11 @@ def collect(repo, streamlit_url=""):
         "model_commit_url": model_commit.get("html_url", ""),
         "hosted_model_source_commit": model_metadata.get("source_commit", ""),
         "hosted_test_metrics": model_metadata.get("test_metrics", {}),
+        "hosted_threshold": model_metadata.get("threshold"),
+        "hosted_best_parameters": model_metadata.get("best_parameters", {}),
+        "hosted_source_sha256": model_metadata.get("source_sha256", ""),
+        "hosted_split_hashes": hosted_preparation.get("file_hashes", {}),
+        "hosted_model_sha256": model_metadata.get("model_sha256", ""),
         "streamlit_url": streamlit_url, "streamlit_health_ok": False,
     }
     if streamlit_url:
